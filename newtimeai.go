@@ -23,13 +23,13 @@ const (
 )
 
 const (
-	obtainTokenUrl        = "/gateway/genToken/obtainToken"              //生成token
-	getDpptTokenUrl       = "qdjk/fullExteriorInvoke/getDpptToken"       //获取登录验证码
-	loginDpptUrl          = "qdjk/fullExteriorInvoke/loginDppt"          //登录电票平台
-	getFaceImgUrl         = "qdjk/fullExteriorInvoke/getFaceImg"         //获取人脸二维码
-	getFaceStateUrl       = "qdjk/fullExteriorInvoke/getFaceState"       //获取人脸二维码状态
-	queryFaceAuthStateUrl = "qdjk/fullExteriorInvoke/queryFaceAuthState" //判断是否需要人脸识别
-	createBlueTicketUrl   = "/fullExterior/invoke/blueTicket"            // 创建蓝票
+	obtainTokenUrl        = "/gateway/genToken/obtainToken"               //生成token
+	getDpptTokenUrl       = "/qdjk/fullExteriorInvoke/getDpptToken"       //获取登录验证码
+	loginDpptUrl          = "/qdjk/fullExteriorInvoke/loginDppt"          //登录电票平台
+	getFaceImgUrl         = "/qdjk/fullExteriorInvoke/getFaceImg"         //获取人脸二维码
+	getFaceStateUrl       = "/qdjk/fullExteriorInvoke/getFaceState"       //获取人脸二维码状态
+	queryFaceAuthStateUrl = "/qdjk/fullExteriorInvoke/queryFaceAuthState" //判断是否需要人脸识别
+	createBlueTicketUrl   = "/qdjk/fullExterior/invoke/blueTicket"        // 创建蓝票
 )
 
 var (
