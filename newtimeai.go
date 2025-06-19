@@ -547,7 +547,7 @@ type fyxm struct {
 	Zzstsgl string `json:"zzstsgl"` //增值税特殊管理
 }
 
-type CreateBlueTicketReq struct {
+type ApplyBlueTicketReq struct {
 	Fpqqlsh  string `json:"fpqqlsh"`  //发票请求流水号,唯一值，如若不传自行生成
 	Username string `json:"username"` //用户电票平台账号
 	Fplxdm   string `json:"fplxdm"`   //发票类型，81-数电发票（增值税专用发票），82-数电发票（普通发票）
@@ -583,7 +583,7 @@ type CreateBlueTicketResponse struct {
 	Zzfphm       string `json:"zzfphm"`       //纸质发票号码
 }
 
-func (c *Client) CreateBlueTicket(req CreateBlueTicketReq) (*CreateBlueTicketResponse, error) {
+func (c *Client) ApplyBlueTicket(req ApplyBlueTicketReq) (*CreateBlueTicketResponse, error) {
 	reqUrl := BaseURL + createBlueTicketUrl
 	response, err := c.httpPost(reqUrl, req, c.getHeader(createBlueTicketUrl))
 	if err != nil {
