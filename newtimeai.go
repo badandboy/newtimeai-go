@@ -29,7 +29,7 @@ const (
 	getFaceImgUrl         = "/qdjk/fullExteriorInvoke/getFaceImg"         //获取人脸二维码
 	getFaceStateUrl       = "/qdjk/fullExteriorInvoke/getFaceState"       //获取人脸二维码状态
 	queryFaceAuthStateUrl = "/qdjk/fullExteriorInvoke/queryFaceAuthState" //判断是否需要人脸识别
-	createBlueTicketUrl   = "/qdjk/fullExteriorInvoke/blueTicket"         // 创建蓝票
+	applyBlueTicketUrl    = "/qdjk/fullExteriorInvoke/blueTicket"         // 创建蓝票
 )
 
 var (
@@ -584,8 +584,8 @@ type CreateBlueTicketResponse struct {
 }
 
 func (c *Client) ApplyBlueTicket(req ApplyBlueTicketReq) (*CreateBlueTicketResponse, error) {
-	reqUrl := BaseURL + createBlueTicketUrl
-	response, err := c.httpPost(reqUrl, req, c.getHeader(createBlueTicketUrl))
+	reqUrl := BaseURL + applyBlueTicketUrl
+	response, err := c.httpPost(reqUrl, req, c.getHeader(applyBlueTicketUrl))
 	if err != nil {
 		return nil, err
 	}
