@@ -1,4 +1,4 @@
-package newtimeai_go
+package newtimeai
 
 import (
 	"bytes"
