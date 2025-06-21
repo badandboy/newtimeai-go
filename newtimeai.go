@@ -23,13 +23,16 @@ const (
 )
 
 const (
-	obtainTokenUrl        = "/gateway/genToken/obtainToken"               //生成token
-	getDpptTokenUrl       = "/qdjk/fullExteriorInvoke/getDpptToken"       //获取登录验证码
-	loginDpptUrl          = "/qdjk/fullExteriorInvoke/loginDppt"          //登录电票平台
-	getFaceImgUrl         = "/qdjk/fullExteriorInvoke/getFaceImg"         //获取人脸二维码
-	getFaceStateUrl       = "/qdjk/fullExteriorInvoke/getFaceState"       //获取人脸二维码状态
-	queryFaceAuthStateUrl = "/qdjk/fullExteriorInvoke/queryFaceAuthState" //判断是否需要人脸识别
-	applyBlueTicketUrl    = "/qdjk/fullExteriorInvoke/blueTicket"         // 创建蓝票
+	obtainTokenUrl         = "/gateway/genToken/obtainToken"                //生成token
+	getDpptTokenUrl        = "/qdjk/fullExteriorInvoke/getDpptToken"        //获取登录验证码
+	loginDpptUrl           = "/qdjk/fullExteriorInvoke/loginDppt"           //登录电票平台
+	getFaceImgUrl          = "/qdjk/fullExteriorInvoke/getFaceImg"          //获取人脸二维码
+	getFaceStateUrl        = "/qdjk/fullExteriorInvoke/getFaceState"        //获取人脸二维码状态
+	queryFaceAuthStateUrl  = "/qdjk/fullExteriorInvoke/queryFaceAuthState"  //判断是否需要人脸识别
+	applyBlueTicketUrl     = "/qdjk/fullExteriorInvoke/blueTicket"          // 创建蓝票
+	resetSmsUrl            = "/qdjk/fullExteriorInvoke/resetSms"            //3101 错误处理，先调用一次获取验证，再调用该接口输入验证码
+	newNoLoginAuthTokenUrl = "/qdjk/fullExteriorInvoke/newNoLoginAuthToken" //3103 错误处理，先调用一次获取验证，再调用该接口输入验证码
+
 )
 
 var (
@@ -38,7 +41,6 @@ var (
 	LoginDpptErr          = errors.New("LoginDppt 失败")
 	GetFaceImgErr         = errors.New("GetFaceImg 失败")
 	QueryFaceAuthStateErr = errors.New("QueryFaceAuthState 失败")
-	CreateBlueTicketErr   = errors.New("CreateBlueTicket 失败")
 )
 
 const tokenValidPeriod = 100 * 60 //官方是2个小时，这里改为100分钟，防止快到期的问题
@@ -69,6 +71,10 @@ type BaseResponse struct {
 
 func (b *BaseResponse) isSuccess() bool {
 	return b.Code == "200"
+}
+
+func (b *BaseResponse) GetCode() string {
+	return b.Code
 }
 
 type obtainTokenResponse struct {
@@ -583,26 +589,51 @@ type CreateBlueTicketResponse struct {
 	Zzfphm       string `json:"zzfphm"`       //纸质发票号码
 }
 
-func (c *Client) ApplyBlueTicket(req ApplyBlueTicketReq) (*CreateBlueTicketResponse, error) {
+func (c *Client) ApplyBlueTicket(req ApplyBlueTicketReq) (*BaseResponse, error) {
 	reqUrl := BaseURL + applyBlueTicketUrl
 	response, err := c.httpPost(reqUrl, req, c.getHeader(applyBlueTicketUrl))
 	if err != nil {
 		return nil, err
 	}
 
-	if !response.isSuccess() {
-		return nil, CreateBlueTicketErr
-	}
+	return response, nil
+}
 
-	payload, err := json.Marshal(response.Data)
+type ResetSmsRequest struct {
+	Nsrsbh    string `json:"nsrsbh"`     //纳税人识别号
+	Username  string `json:"username"`   //用户名
+	Password  string `json:"password"`   //密码
+	IdCard    string `json:"idCard"`     //身份证,第一次请求需要，第二次请求不需要
+	Uid       string `json:"uid"`        //第一次请求不需要，第二次请求用第一次返回的值
+	MobileId  string `json:"mobileId"`   //第一次请求不需要，第二次请求用第一次返回的值
+	SmscodeId string `json:"smscode_id"` //第一次请求不需要，第二次请求用第一次返回的值
+	Sms       string `json:"sms"`        //验证码，第一次请求时，为空，第二次请求时，为发送的验证码
+}
+
+func (c *Client) ResetSms(req ResetSmsRequest) (*BaseResponse, error) {
+	reqUrl := BaseURL + resetSmsUrl
+	response, err := c.httpPost(reqUrl, req, c.getHeader(resetSmsUrl))
 	if err != nil {
 		return nil, err
 	}
 
-	var createBlueTicketRes *CreateBlueTicketResponse
-	if err = json.Unmarshal(payload, &createBlueTicketRes); err != nil {
+	return response, nil
+}
+
+type NewNoLoginAuthTokenRequest struct {
+	Nsrsbh   string `json:"nsrsbh"`   //纳税人识别号
+	Username string `json:"username"` //用户名
+	Password string `json:"password"` //密码
+	SF       string `json:"sf"`       //身份份01:法定代表人，02:财务负责人，03:办税员，04涉税服务人员，05:管理员，07:领票人，08:社保经办人， 09:开票员，10:销售人员
+	Sms      string `json:"sms"`      //验证码，第一次请求时，为空，第二次请求时，为发送的验证码
+}
+
+func (c *Client) NewNoLoginAuthToken(req NewNoLoginAuthTokenRequest) (*BaseResponse, error) {
+	reqUrl := BaseURL + newNoLoginAuthTokenUrl
+	response, err := c.httpPost(reqUrl, req, c.getHeader(newNoLoginAuthTokenUrl))
+	if err != nil {
 		return nil, err
 	}
 
-	return createBlueTicketRes, nil
+	return response, nil
 }
